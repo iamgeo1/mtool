@@ -98,4 +98,3 @@ program4() {
 
 # Start the main menu
 main_menu
-b
